@@ -1,0 +1,369 @@
+<title>Serene VR Transcode Brief</title>
+<style>
+  :root{
+    --ground:#F1F4F5; --surface:#FFFFFF; --surface-2:#E7ECEE;
+    --ink:#0F191F; --ink-2:#44535D; --ink-3:#6B7A84;
+    --rule:#D2DADE; --rule-strong:#B4C0C6;
+    --accent:#0B6E77; --accent-soft:#DCEBED;
+    --bad:#AE382D; --bad-soft:#F6E1DE;
+    --good:#2B6B50; --good-soft:#DDEBE4;
+    --sans:"SF Pro Display",-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif;
+    --serif:Charter,"Bitstream Charter","Iowan Old Style",Georgia,serif;
+    --mono:"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --ground:#0B1317; --surface:#111C21; --surface-2:#18252B;
+      --ink:#E7EEF0; --ink-2:#A2B3BB; --ink-3:#7A8B94;
+      --rule:#22333A; --rule-strong:#31454D;
+      --accent:#4FC6CF; --accent-soft:#10323A;
+      --bad:#E5806F; --bad-soft:#341F1C;
+      --good:#71C097; --good-soft:#152C22;
+    }
+  }
+  :root[data-theme="dark"]{
+    --ground:#0B1317; --surface:#111C21; --surface-2:#18252B;
+    --ink:#E7EEF0; --ink-2:#A2B3BB; --ink-3:#7A8B94;
+    --rule:#22333A; --rule-strong:#31454D;
+    --accent:#4FC6CF; --accent-soft:#10323A;
+    --bad:#E5806F; --bad-soft:#341F1C;
+    --good:#71C097; --good-soft:#152C22;
+  }
+
+  *{box-sizing:border-box}
+  body{
+    background:var(--ground); color:var(--ink);
+    font-family:var(--serif); font-size:17px; line-height:1.62;
+    margin:0; padding:0 1.5rem 6rem;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:53rem; margin:0 auto}
+  .prose{max-width:38rem}
+
+  h1,h2,h3,.label,.stat-n,table,.chip{font-family:var(--sans)}
+  h1{font-size:2.6rem; line-height:1.06; letter-spacing:-.028em; font-weight:700; margin:0 0 .6rem; text-wrap:balance}
+  h2{font-size:1.32rem; letter-spacing:-.014em; font-weight:650; margin:0 0 .9rem; text-wrap:balance}
+  h3{font-size:1.02rem; letter-spacing:-.006em; font-weight:650; margin:0 0 .5rem}
+  p{margin:0 0 1rem}
+  strong{font-weight:600}
+  a{color:var(--accent)}
+
+  .label{
+    font-size:.7rem; font-weight:620; letter-spacing:.13em; text-transform:uppercase;
+    color:var(--ink-3); margin:0 0 .5rem;
+  }
+
+  header{padding:4rem 0 0; border-bottom:1px solid var(--rule); margin-bottom:2.5rem}
+  .meta{
+    font-family:var(--mono); font-size:.76rem; color:var(--ink-3);
+    display:flex; flex-wrap:wrap; gap:.35rem 1.6rem; margin:0 0 2rem;
+  }
+  .thesis{
+    font-size:1.24rem; line-height:1.48; color:var(--ink-2);
+    border-left:3px solid var(--accent); padding-left:1.1rem; margin:0 0 2.5rem; max-width:40rem;
+  }
+  .thesis b{color:var(--ink); font-weight:600}
+
+  .stats{display:grid; grid-template-columns:repeat(auto-fit,minmax(11rem,1fr)); gap:1px;
+    background:var(--rule); border:1px solid var(--rule); margin:0 0 3rem}
+  .stat{background:var(--surface); padding:1.2rem 1.1rem}
+  .stat-n{font-size:1.85rem; font-weight:680; letter-spacing:-.03em; line-height:1;
+    font-variant-numeric:tabular-nums; margin-bottom:.4rem}
+  .stat-n.is-bad{color:var(--bad)} .stat-n.is-good{color:var(--good)}
+  .stat-d{font-family:var(--sans); font-size:.8rem; line-height:1.35; color:var(--ink-3)}
+
+  section{margin:0 0 3.2rem}
+  .band{background:var(--surface); border:1px solid var(--rule); padding:2rem 2rem 1.4rem; margin:0 0 3.2rem}
+
+  .fig{background:var(--surface); border:1px solid var(--rule); padding:1.5rem 1.5rem 1.1rem; margin:1.6rem 0}
+  .fig svg{display:block; width:100%; height:auto}
+  .cap{font-family:var(--sans); font-size:.8rem; color:var(--ink-3); margin:1rem 0 0; line-height:1.45}
+
+  .scroll{overflow-x:auto; margin:1.4rem 0; border:1px solid var(--rule); background:var(--surface)}
+  table{border-collapse:collapse; width:100%; font-size:.86rem; font-variant-numeric:tabular-nums}
+  th{
+    text-align:left; font-weight:620; font-size:.7rem; letter-spacing:.09em; text-transform:uppercase;
+    color:var(--ink-3); padding:.7rem .9rem; border-bottom:1px solid var(--rule-strong); white-space:nowrap;
+  }
+  td{padding:.62rem .9rem; border-bottom:1px solid var(--rule); white-space:nowrap}
+  tr:last-child td{border-bottom:none}
+  td.num{font-family:var(--mono); font-size:.82rem}
+  tr.win td{background:var(--accent-soft); font-weight:600}
+  tr.win td:first-child{box-shadow:inset 3px 0 0 var(--accent)}
+  .flag-bad{color:var(--bad); font-weight:600}
+  .flag-good{color:var(--good); font-weight:600}
+
+  .asks{list-style:none; counter-reset:a; padding:0; margin:1.4rem 0 0}
+  .asks li{counter-increment:a; position:relative; padding:0 0 1.3rem 3rem; margin:0}
+  .asks li::before{
+    content:counter(a); position:absolute; left:0; top:.04em;
+    font-family:var(--mono); font-size:.78rem; font-weight:600; color:var(--accent);
+    border:1px solid var(--accent); width:1.7rem; height:1.7rem;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .asks h3{margin-bottom:.3rem}
+  .asks p{font-size:.95rem; color:var(--ink-2); margin:0}
+
+  .note{border:1px solid var(--rule); border-left:3px solid var(--bad); background:var(--surface);
+    padding:1.3rem 1.4rem; margin:1.6rem 0}
+  .note .label{color:var(--bad)}
+  .note p:last-child{margin-bottom:0}
+
+  .chip{display:inline-block; font-size:.7rem; font-weight:620; letter-spacing:.06em;
+    text-transform:uppercase; padding:.2rem .5rem; border:1px solid currentColor}
+  .chip.bad{color:var(--bad); background:var(--bad-soft)}
+  .chip.good{color:var(--good); background:var(--good-soft)}
+
+  code{font-family:var(--mono); font-size:.86em; background:var(--surface-2); padding:.08em .32em}
+  /* SVG styling lives here rather than in presentation attributes, so the theme
+     tokens resolve reliably across browsers. */
+  .svg-label{fill:var(--ink-3); font-family:var(--mono); font-size:11px}
+  .svg-tick{fill:var(--ink-3); font-family:var(--mono); font-size:10px}
+  .svg-name{fill:var(--ink-2); font-family:var(--sans); font-size:13px}
+  .svg-note{fill:var(--ink-3); font-family:var(--sans); font-size:11.5px}
+  .svg-val{font-family:var(--mono); font-size:12px; font-weight:600}
+  .v-bad{fill:var(--bad)} .v-acc{fill:var(--accent)} .v-ink{fill:var(--ink-2)}
+  .hatch-line{stroke:var(--rule-strong); stroke-width:2.5}
+  .frame-box{fill:none; stroke:var(--rule-strong)}
+  .win-box{fill:var(--accent-soft); stroke:var(--accent); stroke-width:2}
+  .bar-bad{fill:var(--bad); opacity:.82}
+  .bar-acc{fill:var(--accent)}
+  .panel-box{fill:none; stroke:var(--ink-2); stroke-width:1.5; stroke-dasharray:4 3}
+  .guide{stroke:var(--ink-3); stroke-width:1; stroke-dasharray:2 3}
+  footer{border-top:1px solid var(--rule); padding-top:1.5rem; color:var(--ink-3);
+    font-family:var(--sans); font-size:.84rem}
+  @media (max-width:640px){ h1{font-size:2rem} body{font-size:16px} .band{padding:1.4rem 1.2rem} }
+</style>
+
+<div class="wrap">
+<header>
+  <p class="label">Technical brief</p>
+  <h1>The import transcode is capping VR quality</h1>
+  <div class="meta">
+    <span>TO — Serene dev team, project management</span>
+    <span>FROM — David</span>
+    <span>2026-08-17</span>
+  </div>
+  <p class="thesis">
+    Serene re-encodes every upload into an adaptive ladder that tops out around 4K. For 360° video
+    that delivers <b>roughly half the detail a Quest 3S can resolve</b> — which is what users
+    report as “fuzzy”. No upload quality can overcome it, because the pixels are discarded at import.
+  </p>
+</header>
+
+<div class="stats">
+  <div class="stat">
+    <div class="stat-n is-bad">10.7</div>
+    <div class="stat-d">pixels per degree delivered by a 4K 360° rung</div>
+  </div>
+  <div class="stat">
+    <div class="stat-n">19.1</div>
+    <div class="stat-d">pixels per degree the Quest 3S can actually resolve</div>
+  </div>
+  <div class="stat">
+    <div class="stat-n is-good">−88.6%</div>
+    <div class="stat-d">storage and egress if we adopt the proposed spec</div>
+  </div>
+  <div class="stat">
+    <div class="stat-n">29→3.3<span style="font-size:.55em;letter-spacing:0"> GB</span></div>
+    <div class="stat-d">per title, at <em>better</em> image quality</div>
+  </div>
+</div>
+
+<section class="band">
+  <p class="label">For project management</p>
+  <h2>Two separate causes, one already fixed</h2>
+  <div class="prose">
+    <p><strong>The source files.</strong> <span class="chip good">Resolved</span> The masters were
+    encoded beyond what the headset hardware can decode, so playback silently fell back to a degraded
+    path. Re-encoded to a new standard, verified on an actual Quest 3S, confirmed excellent.</p>
+
+    <p><strong>The platform's import transcode.</strong> <span class="chip bad">Needs dev work</span>
+    Every upload is re-encoded into a ladder that appears to top out at 4K H.264. Because a 360° video
+    wraps the entire frame around the viewer's head, a 4K rung shows about half the detail the headset
+    can display.</p>
+
+    <p>The ask is either a “skip transcode” option for already-optimised VR files — the smaller change —
+    or raising the ladder's top rung for VR content. Neither requires new infrastructure, and a
+    reference file encoded to the proposed spec is ready for testing.</p>
+
+    <p><strong>This is not a quality-versus-cost trade.</strong> It improves image quality and cuts
+    storage and bandwidth at the same time, and the saving scales across the whole library including
+    the newly purchased VR Gorilla titles. The risk of deferring is that every VR title added inherits
+    the same ceiling — a library growing at a quality level below what the hardware can show, at
+    roughly nine times the necessary storage cost.</p>
+  </div>
+</section>
+
+<section>
+  <p class="label">The core point</p>
+  <h2>Why 4K is not enough for VR</h2>
+  <div class="prose">
+    <p>This is the thing that makes VR different from flat video, and it is easy to miss when reusing
+    a standard ABR ladder built for flat content.</p>
+    <p>A flat 4K video puts 3840 pixels across the screen. A 360° video spreads those same 3840 pixels
+    around the viewer's <em>entire head</em> — but the headset only shows about 96° at a time. The
+    viewer sees roughly a quarter of the frame, stretched across the full display.</p>
+    <p>So the meaningful unit is <strong>pixels per degree</strong>, not resolution.</p>
+  </div>
+
+  <div class="fig">
+    <svg viewBox="0 0 700 300" role="img" aria-label="A 360 degree frame with the 96 degree visible window highlighted, comparing pixels delivered at 4K versus 5760 wide against the headset panel capacity of 1832 pixels.">
+      <defs>
+        <pattern id="hatch" width="6" height="6" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
+          <line class="hatch-line" x1="0" y1="0" x2="0" y2="6"/>
+        </pattern>
+      </defs>
+      <text class="svg-label" x="0" y="14">FULL 360° EQUIRECTANGULAR FRAME</text>
+      <rect x="0" y="26" width="700" height="46" fill="url(#hatch)" opacity=".45"/>
+      <rect class="frame-box" x="0" y="26" width="700" height="46"/>
+      <rect class="win-box" x="228" y="20" width="187" height="58"/>
+      <text class="svg-val v-acc" x="321" y="54" text-anchor="middle">96° VISIBLE</text>
+      <text class="svg-tick" x="0" y="90">0°</text>
+      <text class="svg-tick" x="700" y="90" text-anchor="end">360°</text>
+
+      <text class="svg-label" x="0" y="132">PIXELS LANDING IN THAT WINDOW</text>
+
+      <text class="svg-name" x="0" y="163">4K ladder rung</text>
+      <rect class="bar-bad" x="150" y="150" width="290" height="20"/>
+      <text class="svg-val v-bad" x="450" y="165">1024 px</text>
+
+      <text class="svg-name" x="0" y="203">Proposed 5760</text>
+      <rect class="bar-acc" x="150" y="190" width="435" height="20"/>
+      <text class="svg-val v-acc" x="595" y="205">1536 px</text>
+
+      <text class="svg-name" x="0" y="243">Quest 3S panel</text>
+      <rect class="panel-box" x="150" y="230" width="519" height="20"/>
+      <text class="svg-val v-ink" x="679" y="245" text-anchor="end">1832 px</text>
+
+      <line class="guide" x1="669" y1="140" x2="669" y2="262"/>
+      <text class="svg-note" x="150" y="285">A 4K 360° rung fills 56% of the panel it is being shown on.</text>
+    </svg>
+    <p class="cap">The headset displays 1832 pixels per eye across its ~96° field of view. A 4K 360°
+    frame can only supply 1024 of them — the display is asked to show detail that was never encoded.</p>
+  </div>
+
+  <div class="scroll">
+    <table>
+      <thead><tr><th>Source</th><th>Pixels across 360°</th><th>Pixels per degree</th><th>Against Quest 3S</th></tr></thead>
+      <tbody>
+        <tr><td>4K 360°</td><td class="num">3840</td><td class="num">10.7</td><td class="flag-bad">56% — visibly soft</td></tr>
+        <tr class="win"><td>5760 360° (proposed)</td><td class="num">5760</td><td class="num">16.0</td><td class="flag-good">84% — sharp</td></tr>
+        <tr><td>Quest 3S panel</td><td class="num">—</td><td class="num">19.1</td><td>100%</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="prose">At 10.7 px/deg the headset shows about half the detail it is capable of. No amount
+  of bitrate fixes this — the pixels are not there.</p>
+</section>
+
+<section>
+  <p class="label">Evidence</p>
+  <h2>Seven encodes, A/B tested on the device</h2>
+  <div class="prose">
+    <p>Measured on an actual enrolled Quest 3S (device <code>panther</code>), not from vendor guidance.
+    PSNR and SSIM were measured <em>through the headset's real viewport</em> — the equirectangular frame
+    reprojected to a 96°×90° eye view at panel resolution — rather than on the raw frame. Measuring the
+    raw frame is misleading, since the poles hold many pixels but almost no viewer attention.</p>
+  </div>
+
+  <div class="scroll">
+    <table>
+      <thead><tr><th></th><th>Resolution</th><th>Codec</th><th>Mbps</th><th>PSNR dB</th><th>SSIM</th></tr></thead>
+      <tbody>
+        <tr class="win"><td>Winner</td><td class="num">5760×5760</td><td>AV1</td><td class="num">34</td><td class="num">46.09</td><td class="num">0.9882</td></tr>
+        <tr><td></td><td class="num">5760×5760</td><td>AV1</td><td class="num">25</td><td class="num">45.57</td><td class="num">0.9876</td></tr>
+        <tr><td></td><td class="num">5760×5760</td><td>HEVC</td><td class="num">44</td><td class="num">44.92</td><td class="num">0.9850</td></tr>
+        <tr><td></td><td class="num">5760×5760</td><td>HEVC</td><td class="num">32</td><td class="num">43.12</td><td class="num">0.9810</td></tr>
+        <tr><td></td><td class="num">4608×4608</td><td>HEVC</td><td class="num">31</td><td class="num">43.05</td><td class="num">0.9814</td></tr>
+        <tr><td></td><td class="num">7680×7680</td><td>HEVC</td><td class="num">45</td><td class="num">42.82</td><td class="num">0.9811</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="prose">
+    <h3>Two findings that should shape the ladder</h3>
+    <p><strong>AV1 beat HEVC by 1.2 dB while using 22% less bandwidth.</strong> Quest 3S has AV1
+    hardware decode (<code>c2.qti.av1.decoder</code>, confirmed on-device). H.264 is the worst choice
+    at these frame sizes.</p>
+    <p><strong>At a fixed bitrate, higher resolution made quality worse.</strong> The 8K encode scored
+    lowest of all seven — spread across 59 megapixels at 45 Mbps, every pixel is starved. The fix is
+    not simply “encode bigger”; 5760×5760 is the measured optimum for this budget.</p>
+  </div>
+</section>
+
+<section>
+  <p class="label">Constraints</p>
+  <h2>Device decoder limits any ladder must respect</h2>
+  <p class="prose">Read from <code>/vendor/etc/media_codecs.xml</code> on the headset.</p>
+  <div class="scroll">
+    <table>
+      <thead><tr><th>Decoder</th><th>Max frame</th><th>Max bitrate</th><th>Throughput</th></tr></thead>
+      <tbody>
+        <tr><td>AV1</td><td class="num">8192×8192</td><td class="num">160 Mbps</td><td class="num">7,776,000 blocks/s</td></tr>
+        <tr><td>HEVC</td><td class="num">8192×8192</td><td class="num">160 Mbps</td><td class="num">7,776,000 blocks/s</td></tr>
+        <tr><td>H.264</td><td class="num">8192×8192</td><td class="num">220 Mbps</td><td class="num">7,776,000 blocks/s</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="prose">The proposed 5760×5760 at 30 fps rung uses <strong>50%</strong> of the throughput
+  budget — comfortable headroom. For context, the original master was itself out of spec: 7680×7680
+  H.264 at <span class="flag-bad">251 Mbps against the 220 Mbps limit</span>, with a nonstandard level
+  (<code>level_idc=100</code>; the H.264 standard stops at 6.2). That has been fixed on our side.</p>
+</section>
+
+<section>
+  <p class="label">Requested changes — in priority order</p>
+  <h2>What we are asking for</h2>
+  <ol class="asks">
+    <li>
+      <h3>Add a passthrough option</h3>
+      <p>A per-item “already optimised / skip transcode” flag. The cheapest fix and correct in
+      principle: pre-conformed VR masters should not be re-encoded. Re-compressing an already
+      compressed delivery file costs a generation of quality for no benefit.</p>
+    </li>
+    <li>
+      <h3>If the ladder stays, raise the top rung for VR content</h3>
+      <p>Rung 1 — 5760×5760 AV1 at 34 Mbps (primary, matches headset capability). Rung 2 — 4608×4608
+      AV1 at 15 Mbps. Rung 3 — 3840×3840 AV1 at 8 Mbps (weak-network fallback). Keep top-bottom stereo
+      packing and equirectangular projection unchanged throughout.</p>
+    </li>
+    <li>
+      <h3>Do not transcode VR content to H.264</h3>
+      <p>Far less efficient at these frame sizes, and it is what caused the original problem.</p>
+    </li>
+    <li>
+      <h3>Confirm the transcoder can decode AV1 input</h3>
+      <p>Many pipelines decode H.264 and HEVC reliably but not AV1. If it cannot, tell us and we will
+      supply a high-bitrate HEVC mezzanine for import instead — but we need to know rather than guess.</p>
+    </li>
+  </ol>
+</section>
+
+<section>
+  <div class="note">
+    <p class="label">Implementation detail that silently breaks VR playback</p>
+    <p><strong>FFmpeg discards 360/stereo metadata on every output, including <code>-c copy</code>.</strong>
+    If the transcode pipeline uses FFmpeg and does not explicitly re-inject it, output files lose the
+    <code>sv3d</code>/<code>st3d</code> boxes and the older Google Spherical V1 <code>uuid</code> XML.
+    Players then fall back to showing a flat, doubled image instead of a sphere.</p>
+    <p>Serene appears to carry projection in CMS fields (<code>Video Angle</code>,
+    <code>Content Shape</code>, <code>3D Layout</code>), which may mask this — but any file leaving the
+    platform for another player will be broken. We have a working injector (~200 lines, no dependencies)
+    that writes both metadata generations and can be shared.</p>
+  </div>
+</section>
+
+<section>
+  <p class="label">Reference</p>
+  <h2>A file encoded to the proposed spec is ready</h2>
+  <p class="prose"><code>Londen_5760_av1_34M.mp4</code> — verified end to end: clean decode, correct
+  metadata, faststart index, and quality of PSNR 45.8 / SSIM 0.987 sampled at six points across the
+  full 15:27. Confirmed excellent on a Quest 3S. Available for testing against the pipeline.</p>
+</section>
+
+<footer>
+  Full working notes, measurement methodology and the house encoding standard:
+  <code>RESULTS.md</code> and <code>ENCODING-GUIDE.md</code>.
+</footer>
+</div>
