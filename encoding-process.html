@@ -1,0 +1,297 @@
+<title>Serene VR Encoding Process</title>
+<style>
+  :root{
+    --ground:#F1F4F5; --surface:#FFFFFF; --surface-2:#E7ECEE;
+    --ink:#0F191F; --ink-2:#44535D; --ink-3:#6B7A84;
+    --rule:#D2DADE; --rule-strong:#B4C0C6;
+    --accent:#0B6E77; --accent-soft:#DCEBED;
+    --bad:#AE382D; --bad-soft:#F6E1DE;
+    --good:#2B6B50; --good-soft:#DDEBE4;
+    --sans:"SF Pro Display",-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif;
+    --serif:Charter,"Bitstream Charter","Iowan Old Style",Georgia,serif;
+    --mono:"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --ground:#0B1317; --surface:#111C21; --surface-2:#18252B;
+      --ink:#E7EEF0; --ink-2:#A2B3BB; --ink-3:#7A8B94;
+      --rule:#22333A; --rule-strong:#31454D;
+      --accent:#4FC6CF; --accent-soft:#10323A;
+      --bad:#E5806F; --bad-soft:#341F1C;
+      --good:#71C097; --good-soft:#152C22;
+    }
+  }
+  :root[data-theme="dark"]{
+    --ground:#0B1317; --surface:#111C21; --surface-2:#18252B;
+    --ink:#E7EEF0; --ink-2:#A2B3BB; --ink-3:#7A8B94;
+    --rule:#22333A; --rule-strong:#31454D;
+    --accent:#4FC6CF; --accent-soft:#10323A;
+    --bad:#E5806F; --bad-soft:#341F1C;
+    --good:#71C097; --good-soft:#152C22;
+  }
+
+  *{box-sizing:border-box}
+  body{background:var(--ground); color:var(--ink); font-family:var(--serif);
+    font-size:17px; line-height:1.62; margin:0; padding:0 1.5rem 6rem;
+    -webkit-font-smoothing:antialiased}
+  .wrap{max-width:53rem; margin:0 auto}
+  .prose{max-width:38rem}
+
+  h1,h2,h3,.label,table,.chip,.step-n{font-family:var(--sans)}
+  h1{font-size:2.6rem; line-height:1.06; letter-spacing:-.028em; font-weight:700;
+    margin:0 0 .6rem; text-wrap:balance}
+  h2{font-size:1.32rem; letter-spacing:-.014em; font-weight:650; margin:0 0 .9rem; text-wrap:balance}
+  h3{font-size:1.02rem; letter-spacing:-.006em; font-weight:650; margin:0 0 .45rem}
+  p{margin:0 0 1rem}
+  strong{font-weight:600}
+  .label{font-size:.7rem; font-weight:620; letter-spacing:.13em; text-transform:uppercase;
+    color:var(--ink-3); margin:0 0 .5rem}
+
+  header{padding:4rem 0 0; border-bottom:1px solid var(--rule); margin-bottom:2.5rem}
+  .meta{font-family:var(--mono); font-size:.76rem; color:var(--ink-3);
+    display:flex; flex-wrap:wrap; gap:.35rem 1.6rem; margin:0 0 2rem}
+  .thesis{font-size:1.24rem; line-height:1.48; color:var(--ink-2);
+    border-left:3px solid var(--accent); padding-left:1.1rem; margin:0 0 2.5rem; max-width:40rem}
+  .thesis b{color:var(--ink); font-weight:600}
+
+  section{margin:0 0 3.2rem}
+  pre{background:var(--surface); border:1px solid var(--rule); padding:1rem 1.1rem;
+    overflow-x:auto; margin:1.1rem 0; font-family:var(--mono); font-size:.84rem;
+    line-height:1.65; color:var(--ink)}
+  pre .c{color:var(--ink-3)}
+  code{font-family:var(--mono); font-size:.86em; background:var(--surface-2); padding:.08em .32em}
+
+  .steps{list-style:none; counter-reset:s; padding:0; margin:1.4rem 0 0}
+  .steps > li{counter-increment:s; position:relative; padding:0 0 2rem 3.2rem; margin:0}
+  .steps > li::before{content:counter(s); position:absolute; left:0; top:0;
+    font-family:var(--mono); font-size:.78rem; font-weight:600; color:var(--accent);
+    border:1px solid var(--accent); width:1.8rem; height:1.8rem;
+    display:flex; align-items:center; justify-content:center}
+  .steps p{font-size:.95rem; color:var(--ink-2); margin:0}
+  .steps pre{margin:.7rem 0 .6rem}
+
+  .scroll{overflow-x:auto; margin:1.4rem 0; border:1px solid var(--rule); background:var(--surface)}
+  table{border-collapse:collapse; width:100%; font-size:.86rem; font-variant-numeric:tabular-nums}
+  th{text-align:left; font-weight:620; font-size:.7rem; letter-spacing:.09em; text-transform:uppercase;
+    color:var(--ink-3); padding:.7rem .9rem; border-bottom:1px solid var(--rule-strong); white-space:nowrap}
+  td{padding:.62rem .9rem; border-bottom:1px solid var(--rule); vertical-align:top}
+  td.nw{white-space:nowrap}
+  tr:last-child td{border-bottom:none}
+  td.num{font-family:var(--mono); font-size:.82rem; white-space:nowrap}
+  tr.hi td{background:var(--accent-soft); font-weight:600}
+
+  .finding{background:var(--surface); border:1px solid var(--rule);
+    border-left:3px solid var(--accent); padding:1.4rem 1.5rem; margin:1.4rem 0}
+  .finding h3{color:var(--accent)}
+  .finding p:last-child{margin-bottom:0}
+  .finding .prose{max-width:none}
+
+  .fault{background:var(--surface); border:1px solid var(--rule); padding:1.2rem 1.3rem; margin:1rem 0}
+  .fault h3{margin-bottom:.35rem}
+  .fault p{font-size:.92rem; color:var(--ink-2); margin:0}
+  .fault p + p{margin-top:.5rem}
+
+  footer{border-top:1px solid var(--rule); padding-top:1.5rem; color:var(--ink-3);
+    font-family:var(--sans); font-size:.84rem}
+  @media (max-width:640px){h1{font-size:2rem} body{font-size:16px}}
+</style>
+
+<div class="wrap">
+<header>
+  <p class="label">Runbook</p>
+  <h1>How we encode VR video for Serene</h1>
+  <div class="meta">
+    <span>FOR — Serene dev team</span>
+    <span>PLATFORM — macOS</span>
+    <span>TARGET — Meta Quest 3S</span>
+  </div>
+  <p class="thesis">
+    Serene's VR videos were reported as fuzzy in the headset. The cause was
+    <b>two unrelated faults in the source files</b>, both now understood. This is the process
+    that fixes them — measured against the actual device rather than vendor guidance, and
+    packaged as scripts you can run on any Mac.
+  </p>
+</header>
+
+<section>
+  <p class="label">Setup</p>
+  <h2>Two commands</h2>
+  <pre>brew install ffmpeg
+./check_setup.sh</pre>
+  <p class="prose">Only <code>ffmpeg</code> and <code>python3</code> are required — the Python
+  tools need no third-party packages. <code>adb</code> is optional, for headset testing.
+  <code>check_setup.sh</code> reports anything missing with the exact command to fix it.</p>
+  <p class="prose">It specifically checks that your ffmpeg includes <strong>libsvtav1</strong>.
+  Some builds ship without it, every encode depends on it, and without this check the failure
+  surfaces halfway through a long batch.</p>
+</section>
+
+<section>
+  <p class="label">The workflow</p>
+  <h2>Inspect, encode, verify</h2>
+  <ol class="steps">
+    <li>
+      <h3>Inspect first — always</h3>
+      <pre>./inspect_master.sh /path/to/masters/</pre>
+      <p>Read-only and takes seconds. Tells you what each file actually is and what it will
+      become. Vendors ship a mix of 360°/180°, mono/stereo and 30/60 fps, and files are
+      sometimes mislabelled — worth knowing before starting encodes that run for tens of
+      minutes each. Anything ambiguous is flagged rather than guessed at.</p>
+    </li>
+    <li>
+      <h3>Encode the batch</h3>
+      <pre>./encode_vendor.sh /path/to/masters/
+<span class="c">PRESET=8 ./encode_vendor.sh ...   # ~2x faster, small quality cost</span></pre>
+      <p>Detects each file's format and picks the right target automatically. Roughly 0.3×
+      realtime on Apple Silicon — about 50 minutes per 15-minute title — and several times
+      slower on Intel.</p>
+    </li>
+    <li>
+      <h3>Verify before uploading</h3>
+      <pre>./verify_final.sh final/output.mp4 master.mp4</pre>
+      <p>Checks the 360 metadata survived, the index sits before the media, the file decodes
+      cleanly end to end, and measures quality at six points across the full running time —
+      so a demanding stretch that starved the encoder cannot slip through unnoticed.</p>
+    </li>
+  </ol>
+</section>
+
+<section>
+  <p class="label">The standard</p>
+  <h2>AV1 · ~16 pixels per degree · ≤35 Mbps</h2>
+  <div class="scroll">
+    <table>
+      <thead><tr><th>Source format</th><th>Output</th><th>Bitrate</th></tr></thead>
+      <tbody>
+        <tr class="hi"><td>360° stereo top-bottom, 30 fps</td><td class="num">5760×5760</td><td class="num">34 Mbps</td></tr>
+        <tr><td>360° stereo top-bottom, 60 fps</td><td class="num">5152×5152</td><td class="num">35 Mbps <em>(capped)</em></td></tr>
+        <tr><td>360° mono, 30 fps</td><td class="num">5760×2880</td><td class="num">17 Mbps</td></tr>
+        <tr><td>VR180 stereo side-by-side, 30 fps</td><td class="num">5760×2880</td><td class="num">17 Mbps</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="prose">Sources already below target are never upscaled. Every output gets a
+  faststart index and has its 360/stereo metadata restored.</p>
+  <p class="prose"><strong>Prefer 30 fps masters for 360° content.</strong> At 60 fps, holding
+  quality constant would need ~55 Mbps — past the budget — so it gets capped and comes out
+  softer. VR180 does not have this problem: it covers a quarter of the sphere, so 60 fps fits
+  the budget at full quality. If a vendor offers the same scene in VR180, it is the better buy.</p>
+</section>
+
+<section>
+  <p class="label">Worth knowing</p>
+  <h2>Two things that are easy to get backwards</h2>
+
+  <div class="finding">
+    <h3>Resolution is the wrong unit — use pixels per degree</h3>
+    <div class="prose">
+      <p>A flat 4K video puts 3840 pixels across the screen. A 360° video spreads those same
+      pixels around the viewer's <em>entire head</em>, and the headset shows only ~96° at a
+      time.</p>
+      <p>So a 4K 360° video delivers <strong>10.7 px/deg</strong> against the Quest 3S's
+      ~19.1 — about half the detail the display can resolve. This is why an ABR ladder
+      designed for flat video under-serves VR, and it is the single most useful idea to carry
+      into any decision about VR video quality.</p>
+    </div>
+  </div>
+
+  <div class="finding">
+    <h3>At a fixed bitrate, more pixels make quality worse</h3>
+    <div class="prose">
+      <p>In our seven-way A/B on the headset, an <strong>8K encode at 45 Mbps scored lowest of
+      all</strong>. Spread across 59 megapixels, every pixel is starved. A 4608² encode at the
+      same bitrate as a 5760² one was indistinguishable.</p>
+      <p>If something looks soft, the lever is bitrate or codec — not resolution. Raising
+      resolution within a fixed budget actively hurts.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <p class="label">What went wrong originally</p>
+  <h2>Two faults, same symptom</h2>
+  <p class="prose">Both titles looked "fuzzy". The causes were unrelated, which is the argument
+  for auditing the library with <code>inspect_master.sh</code> rather than fixing titles one
+  complaint at a time.</p>
+
+  <div class="fault">
+    <h3>London — over the decoder's bitrate limit</h3>
+    <p>Encoded at <strong>251 Mbps against the Quest 3S's 220 Mbps H.264 ceiling</strong>, with
+    a nonstandard profile level. The decoder cannot keep up and playback falls back to a
+    degraded path.</p>
+    <p>Fixed by re-encoding to AV1 at 30 Mbps — <strong>29 GB → 3.3 GB</strong>, at better
+    measured quality.</p>
+  </div>
+
+  <div class="fault">
+    <h3>Animals Compilation — mono video labelled as stereo</h3>
+    <p>The file is a normal mono 360° frame but was tagged <em>top-bottom stereo</em>. A player
+    honouring that tag splits one image in half and sends the sky to one eye and the ground to
+    the other, stretching each 2× vertically. Half the resolution, plus two eyes that cannot
+    fuse.</p>
+    <p>Proof: PSNR between the two halves was <strong>7.1 dB</strong>, where genuine stereo
+    measures ~25 dB. The file was otherwise healthy — nothing wrong with its encoding at all.</p>
+  </div>
+</section>
+
+<section>
+  <p class="label">Reference</p>
+  <h2>The tools</h2>
+  <div class="scroll">
+    <table>
+      <thead><tr><th>Tool</th><th>Purpose</th></tr></thead>
+      <tbody>
+        <tr><td class="num nw">check_setup.sh</td><td>Verify this Mac can run the toolkit</td></tr>
+        <tr><td class="num nw">inspect_master.sh</td><td>Dry run — identify each master, show its computed target</td></tr>
+        <tr><td class="num nw">encode_vendor.sh</td><td>Batch encode, auto-detecting each file's format</td></tr>
+        <tr><td class="num nw">encode_final.sh</td><td>Single file at a fixed preset, including mezzanine presets</td></tr>
+        <tr><td class="num nw">verify_final.sh</td><td>Pre-upload QC — metadata, index, clean decode, measured quality</td></tr>
+        <tr><td class="num nw">check_stream.sh</td><td>Measure what a platform <em>actually delivers</em>, from its HLS manifest</td></tr>
+        <tr><td class="num nw">inject_spatial.py</td><td>Restore the 360 metadata FFmpeg strips from every output</td></tr>
+        <tr><td class="num nw">vr_plan.py</td><td>Format detection and target calculation, shared by the scripts</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section>
+  <p class="label">Troubleshooting</p>
+  <h2>The failure modes we actually hit</h2>
+
+  <div class="fault">
+    <h3>Video plays flat, or as two stacked images</h3>
+    <p>The 360 metadata is missing. <strong>FFmpeg discards it on every output, including
+    <code>-c copy</code></strong> — that is FFmpeg's mov muxer, not a bug in the toolkit.
+    <code>inject_spatial.py</code> restores it and the scripts always run it. Never upload a
+    file that has not been through <code>verify_final.sh</code>.</p>
+  </div>
+
+  <div class="fault">
+    <h3>A square file is flagged for review</h3>
+    <p>A square frame with no stereo tag is genuinely ambiguous — 360° stereo top-bottom, or
+    VR180 mono. The tool assumes top-bottom 360°, correct at 8K sizes, and flags it. This comes
+    up often because any FFmpeg pass strips the tag.</p>
+    <p>To check: if the top and bottom halves show near-identical images, it is stereo; if they
+    show different parts of the scene, it is mono.</p>
+  </div>
+
+  <div class="fault">
+    <h3>AV1 output is below the requested bitrate</h3>
+    <p>Expected, not a fault. SVT-AV1's VBR stops once it hits its quality target, so easy
+    content lands under budget — the target was met with fewer bits.</p>
+  </div>
+
+  <div class="fault">
+    <h3>Sideloaded files don't appear on the headset</h3>
+    <p>They land in the <strong>Gallery</strong> app, not <strong>Files</strong>. Use
+    <code>./play.sh &lt;name&gt;</code> to launch one directly from the Mac.</p>
+  </div>
+</section>
+
+<footer>
+  Full standard and device limits in <code>ENCODING-GUIDE.md</code>; the investigation and all
+  measurements in <code>RESULTS.md</code>. The platform's import transcode currently re-encodes
+  uploads into a lower-quality ladder — that is covered separately in
+  <code>PLATFORM-TRANSCODE-BRIEF.md</code>.
+</footer>
+</div>
