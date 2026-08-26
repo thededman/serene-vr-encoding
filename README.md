@@ -1,12 +1,14 @@
 # Serene VR — video encoding toolkit
 
+> **Just want to encode a video?** See [START-HERE.md](START-HERE.md) — it's two commands.
+
 Prepares 360°/VR video for streaming to Meta Quest headsets through the Serene platform.
 
 Built after Serene's VR videos were reported as "fuzzy" in the headset. The cause turned
 out to be two unrelated faults in the source files, both now understood and fixable. This
 toolkit encodes to a standard measured against the actual hardware — see
-[`ENCODING-GUIDE.md`](ENCODING-GUIDE.md) for the standard and
-[`RESULTS.md`](RESULTS.md) for the evidence behind it.
+[`ENCODING-GUIDE.md`](docs/ENCODING-GUIDE.md) for the standard and
+[`RESULTS.md`](docs/RESULTS.md) for the evidence behind it.
 
 **Target device:** Meta Quest 3S · **Streaming budget:** ~25–35 Mbps
 
@@ -77,7 +79,7 @@ run for tens of minutes each.
 | VR180 stereo side-by-side, 30 fps | 5760×2880 | 17 Mbps |
 
 Sources already below target are never upscaled. Full reasoning in
-[`ENCODING-GUIDE.md`](ENCODING-GUIDE.md).
+[`ENCODING-GUIDE.md`](docs/ENCODING-GUIDE.md).
 
 ### Two findings that are easy to get backwards
 
@@ -127,7 +129,7 @@ the speed at a small quality cost; keep preset 6 for flagship content.
 
 ## Related documents
 
-- [`ENCODING-GUIDE.md`](ENCODING-GUIDE.md) — the standard, the device limits, and why
-- [`RESULTS.md`](RESULTS.md) — the full investigation and measurements
-- [`PLATFORM-TRANSCODE-BRIEF.md`](PLATFORM-TRANSCODE-BRIEF.md) — the ask for the Serene
+- [`ENCODING-GUIDE.md`](docs/ENCODING-GUIDE.md) — the standard, the device limits, and why
+- [`RESULTS.md`](docs/RESULTS.md) — the full investigation and measurements
+- [`PLATFORM-TRANSCODE-BRIEF.md`](docs/PLATFORM-TRANSCODE-BRIEF.md) — the ask for the Serene
   platform, whose import transcode currently re-encodes uploads into a lower-quality ladder
