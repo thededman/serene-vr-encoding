@@ -1,6 +1,6 @@
 # Serene VR — video encoding toolkit
 
-> **Just want to encode a video?** See [START-HERE.md](START-HERE.md) — it's two commands.
+> **Converting videos? Start here:** [HOW-TO-CONVERT-VIDEOS.md](HOW-TO-CONVERT-VIDEOS.md) — the complete walkthrough, setup to headset check.
 
 Prepares 360°/VR video for streaming to Meta Quest headsets through the Serene platform.
 
