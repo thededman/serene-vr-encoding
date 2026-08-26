@@ -107,6 +107,13 @@ wrong stereo tag splits one image in half and sends unrelated halves to each eye
 Serene CMS also carries a `3D Layout` field; if the app trusts that over the file, it must
 be corrected there too.
 
+**A square file is reported as needing review.** A square frame with no stereo tag is
+genuinely ambiguous — it could be 360° stereo packed top-bottom, or VR180 mono. The tool
+assumes top-bottom 360°, which is right at 8K sizes, and flags it. This comes up often
+because *any* FFmpeg pass strips the stereo tag, so intermediate files routinely arrive
+untagged. Check one frame before trusting a whole batch: if the top and bottom halves show
+near-identical images, it is stereo; if they show different parts of the scene, it is mono.
+
 **Sideloaded files don't appear on the headset.** They land in the **Gallery** app, not
 **Files**. Use `./play.sh <name>` to launch one directly.
 

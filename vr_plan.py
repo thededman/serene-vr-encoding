@@ -94,6 +94,18 @@ def identify(info):
 
     ratio = eye_w / eye_h
 
+    # A square frame carrying NO stereo tag is genuinely ambiguous: it is either 360
+    # stereo packed top-bottom (the standard 8K VR layout) or a VR180 mono frame. Any
+    # FFmpeg pass strips the stereo tag, so intermediate files routinely arrive like
+    # this. Top-bottom 360 is overwhelmingly the common case at these sizes -- guessing
+    # VR180 mono instead silently halves the resolution and mangles the projection.
+    if layout == "mono" and abs(ratio - 1.0) < 0.05:
+        return ("tb", eye_w, eye_h // 2, 360,
+                f"{w}x{h} is square with no stereo tag (ambiguous). ASSUMING 360 STEREO "
+                "TOP-BOTTOM, the usual layout at this size. If it is really VR180 mono, "
+                "the output will be wrong -- check one frame before trusting a batch")
+
+
     # Sanity-check the declared stereo layout against the geometry. A correct per-eye frame
     # is 2:1 (360x180) or 1:1 (180x180). Anything wildly outside that means the stereo tag
     # is wrong -- most often a mono equirect exported with a spurious stereo flag. Trusting
@@ -121,7 +133,8 @@ def plan(path, max_mbps=DEFAULT_MAX_MBPS, px_per_deg=TARGET_PX_PER_DEG):
     info = probe(path)
     layout, src_eye_w, src_eye_h, degrees, note = identify(info)
     notes = [note] if note else []
-    status = "review" if "TREATING AS MONO" in note or "check manually" in note else "ok"
+    status = "review" if any(k in note for k in
+        ("TREATING AS MONO", "check manually", "ASSUMING 360 STEREO")) else "ok"
 
     if info["projection"] is None:
         notes.append("no 360 metadata in source; assuming equirectangular")
