@@ -67,7 +67,7 @@ while IFS= read -r f; do
     fi
 
     # Colour tagging is carried across explicitly; an untagged output can shift in-headset.
-    if ! ffmpeg -hide_banner -loglevel error -stats -i "$f" \
+    if ! ffmpeg -nostdin -hide_banner -loglevel error -stats -i "$f" \
         -vf "scale=${P_OUT_W}:${P_OUT_H}:flags=lanczos" -pix_fmt yuv420p \
         -color_primaries bt709 -color_trc bt709 -colorspace bt709 \
         -c:v libsvtav1 -preset "$PRESET" -b:v "${P_MBPS}M" -g $((P_FPS * 2)) \
