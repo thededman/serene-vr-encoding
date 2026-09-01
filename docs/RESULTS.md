@@ -327,6 +327,20 @@ validates the encode settings end to end on real hardware.
 - ❓ **Not yet proven:** that the *Serene platform* delivers this quality. Local playback
   bypasses both the platform transcode and the Serene app's player. That is the next test.
 
+## 6d. Decision — conversion stays local (2026-08-27)
+
+Agreed in the team meeting: **video conversion remains on David's Mac using this toolkit.**
+It is the official process, not an interim one.
+
+Basis: output validated on the headset and in streaming; ~3x realtime throughput on the
+M5 Pro; zero cloud cost; and AWS's managed transcoder cannot produce the house format at
+all (MediaConvert caps AV1 at 4096x2160 and HEVC at 8192x4320 — below our 5760x5760
+stereo target — and strips spatial metadata).
+
+Revisit only if: the library grows beyond a handful of titles/month, or people without a
+Mac need to convert. The documented path then is our toolkit in a container (S3-triggered
+AWS Batch/ECS), not MediaConvert.
+
 ## 7. Open items
 
 - [x] ~~Score the clips on the Quest 3S~~ — **done, T6 (AV1) confirmed best.**
