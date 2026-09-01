@@ -14,15 +14,33 @@ echo
 
 # --- hardware ------------------------------------------------------------------------
 CPU=$(sysctl -n machdep.cpu.brand_string 2>/dev/null || echo "unknown")
-RAM=$(sysctl -n hw.memsize 2>/dev/null | awk '{printf "%.0f GB", $1/1024/1024/1024}')
+# RAM_GB_OVERRIDE exists only so the warning paths can be tested on a big machine.
+RAM_GB=${RAM_GB_OVERRIDE:-$(sysctl -n hw.memsize 2>/dev/null | awk '{printf "%d", $1/1024/1024/1024}')}
 echo "Machine"
 say "CPU" "$CPU"
-say "RAM" "${RAM:-unknown}"
+say "RAM" "${RAM_GB:-?} GB"
 case "$CPU" in
     *Apple*) say "encode speed" "Apple Silicon — expect ~0.3-0.5x realtime at 5760x5760" ;;
     *)       say "encode speed" "Intel — AV1 encoding will be SEVERAL TIMES slower;
                          budget hours per title, or use PRESET=8" ;;
 esac
+
+# The encoder holds multi-GB working buffers at these frame sizes (measured peaks are in
+# the README). Once macOS starts swapping, a ~30-minute encode turns into hours — this is
+# the usual cause of "it works but takes forever" on smaller machines.
+if [ "${RAM_GB:-0}" -ge 32 ]; then
+    say "memory" "comfortable for all presets and formats"
+elif [ "${RAM_GB:-0}" -ge 16 ]; then
+    say "memory" "16-31 GB: MONO titles OK (encoder peaks ~9 GB); close other apps.
+                         STEREO (5760x5760) titles peak ~16 GB — on a 16 GB machine
+                         that is all of RAM, so the encode swaps and crawls. Run
+                         stereo titles on the designated 32 GB+ Mac instead.
+                         (PRESET=8 doubles speed but does NOT reduce memory.)"
+else
+    say "memory" "UNDER 16 GB: below what the encoder itself needs (~9 GB mono,
+                         ~16 GB stereo). Run conversions on the designated Mac."
+    ok=1
+fi
 echo
 
 # --- required ------------------------------------------------------------------------
@@ -86,7 +104,7 @@ echo "=============================================="
 if [ "$ok" = "0" ]; then
     echo " READY — see README.md for the workflow"
 else
-    echo " NOT READY — install the items marked MISSING above"
+    echo " NOT READY — fix the items flagged above"
 fi
 echo "=============================================="
 exit $ok

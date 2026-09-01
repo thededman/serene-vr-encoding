@@ -9,6 +9,9 @@ headset out. Same steps for everyone.
 
 - A **Mac** (the toolkit doesn't run on Windows — if the videos live on a
   Windows machine, copy them to the Mac first; an external drive is fine)
+- **32 GB+ RAM for stereo titles; 16 GB is enough for mono only.** The encoder itself
+  peaks at ~9 GB (mono) / ~16 GB (stereo, measured) — on a 16 GB Mac a stereo encode
+  swaps and slows to a crawl. `./check_setup.sh` tells you which your machine can handle.
 - The video files, all in one folder
 - A login for serene.precipiodx.com
 
@@ -56,7 +59,8 @@ One command does every file in the folder: picks the right size and bitrate for
 its format, converts to AV1, and restores the 360° metadata (without which the
 video plays flat instead of wrapping around you).
 
-⏱ **This is slow — about 3× the video's length per file.** A 30-minute video
+⏱ **This is slow — about 3× the video's length per file.** If it is running far
+slower than that, it is memory pressure — see the Hardware note in "What you need". A 30-minute video
 takes ~90 minutes; a folder of four is an overnight job. Leave the Mac plugged
 in and let it run.
 

@@ -25,6 +25,21 @@ brew install ffmpeg          # must include libsvtav1 — check_setup.sh verifie
 and `python3` are required; `adb` is optional and used only for headset testing. The Python
 tools need no third-party packages.
 
+## Hardware
+
+Measured on real encodes (60-second samples, peak encoder memory):
+
+| Output format | Peak memory | Notes |
+|---|---|---|
+| Mono (5760×2880) | ~9 GB | Runs on a 16 GB Mac if other apps are closed |
+| Stereo (5760×5760) | ~16 GB | Needs a **32 GB+** Mac — on 16 GB it swaps and crawls |
+
+- **Reference setup: Apple Silicon (Pro/Max), 32 GB+ RAM** — handles everything.
+- 16 GB: mono titles only, one at a time. `PRESET=8` doubles speed but does **not**
+  reduce memory, so it will not make stereo fit.
+- Per the team decision, conversion normally runs on the designated Mac; other machines
+  are a fallback for mono content.
+
 ## Quick start
 
 ```bash
@@ -122,6 +137,11 @@ near-identical images, it is stereo; if they show different parts of the scene, 
 **AV1 output is below the requested bitrate.** Expected. SVT-AV1's VBR stops when it hits
 its quality target, so easy content lands under budget. Not a fault — the quality target
 was met with fewer bits.
+
+**Encoding is far slower than ~3× the video's length.** Almost always memory pressure:
+the encoder peaks at ~9 GB (mono) / ~16 GB (stereo), and once macOS starts swapping the
+encode rate collapses. Check Activity Monitor → Memory Pressure while encoding. Close
+other apps, encode one file at a time, and run stereo titles on a 32 GB+ machine.
 
 **Encoding is very slow.** AV1 preset 6 runs ~0.3× realtime at 5760×5760 on Apple Silicon,
 and several times slower on Intel. Use `PRESET=8 ./encode_vendor.sh ...` for roughly double
