@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Serene VR Encoding</title>
+<meta name="description" content="A toolkit for preparing 360/VR video for Meta Quest headsets, encoded to a standard measured against the actual device.">
+<style>
+  :root{
+    --ground:#F1F4F5; --surface:#FFFFFF; --surface-2:#E7ECEE;
+    --ink:#0F191F; --ink-2:#44535D; --ink-3:#6B7A84;
+    --rule:#D2DADE; --rule-strong:#B4C0C6;
+    --accent:#0B6E77; --accent-soft:#DCEBED;
+    --bad:#AE382D; --good:#2B6B50;
+    --sans:"SF Pro Display",-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif;
+    --serif:Charter,"Bitstream Charter","Iowan Old Style",Georgia,serif;
+    --mono:"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --ground:#0B1317; --surface:#111C21; --surface-2:#18252B;
+      --ink:#E7EEF0; --ink-2:#A2B3BB; --ink-3:#7A8B94;
+      --rule:#22333A; --rule-strong:#31454D;
+      --accent:#4FC6CF; --accent-soft:#10323A;
+      --bad:#E5806F; --good:#71C097;
+    }
+  }
+  :root[data-theme="dark"]{
+    --ground:#0B1317; --surface:#111C21; --surface-2:#18252B;
+    --ink:#E7EEF0; --ink-2:#A2B3BB; --ink-3:#7A8B94;
+    --rule:#22333A; --rule-strong:#31454D;
+    --accent:#4FC6CF; --accent-soft:#10323A;
+    --bad:#E5806F; --good:#71C097;
+  }
+  *{box-sizing:border-box}
+  body{background:var(--ground); color:var(--ink); font-family:var(--serif);
+    font-size:17px; line-height:1.62; margin:0; padding:0 1.5rem 6rem;
+    -webkit-font-smoothing:antialiased}
+  .wrap{max-width:53rem; margin:0 auto}
+  .prose{max-width:38rem}
+  h1,h2,h3,.label,table,.btn,.stat-n{font-family:var(--sans)}
+  h1{font-size:3rem; line-height:1.03; letter-spacing:-.03em; font-weight:700;
+    margin:0 0 .7rem; text-wrap:balance}
+  h2{font-size:1.32rem; letter-spacing:-.014em; font-weight:650; margin:0 0 .9rem; text-wrap:balance}
+  h3{font-size:1.02rem; letter-spacing:-.006em; font-weight:650; margin:0 0 .45rem}
+  p{margin:0 0 1rem}
+  a{color:var(--accent)}
+  .label{font-size:.7rem; font-weight:620; letter-spacing:.13em; text-transform:uppercase;
+    color:var(--ink-3); margin:0 0 .5rem}
+  header{padding:4.5rem 0 0; border-bottom:1px solid var(--rule); margin-bottom:2.5rem}
+  .thesis{font-size:1.26rem; line-height:1.48; color:var(--ink-2);
+    border-left:3px solid var(--accent); padding-left:1.1rem; margin:0 0 2rem; max-width:40rem}
+  .thesis b{color:var(--ink); font-weight:600}
+  .btn{display:inline-block; font-size:.85rem; font-weight:600; letter-spacing:.01em;
+    text-decoration:none; padding:.6rem 1.1rem; border:1px solid var(--accent);
+    color:var(--accent); margin:0 .5rem 2.5rem 0}
+  .btn.solid{background:var(--accent); color:var(--ground)}
+  .stats{display:grid; grid-template-columns:repeat(auto-fit,minmax(11rem,1fr)); gap:1px;
+    background:var(--rule); border:1px solid var(--rule); margin:0 0 3rem}
+  .stat{background:var(--surface); padding:1.2rem 1.1rem}
+  .stat-n{font-size:1.85rem; font-weight:680; letter-spacing:-.03em; line-height:1;
+    font-variant-numeric:tabular-nums; margin-bottom:.4rem}
+  .stat-n.bad{color:var(--bad)} .stat-n.good{color:var(--good)}
+  .stat-d{font-family:var(--sans); font-size:.8rem; line-height:1.35; color:var(--ink-3)}
+  section{margin:0 0 3.2rem}
+  pre{background:var(--surface); border:1px solid var(--rule); padding:1rem 1.1rem;
+    overflow-x:auto; margin:1.1rem 0; font-family:var(--mono); font-size:.84rem;
+    line-height:1.7; color:var(--ink)}
+  pre .c{color:var(--ink-3)}
+  code{font-family:var(--mono); font-size:.86em; background:var(--surface-2); padding:.08em .32em}
+  .scroll{overflow-x:auto; margin:1.4rem 0; border:1px solid var(--rule); background:var(--surface)}
+  table{border-collapse:collapse; width:100%; font-size:.86rem; font-variant-numeric:tabular-nums}
+  th{text-align:left; font-weight:620; font-size:.7rem; letter-spacing:.09em; text-transform:uppercase;
+    color:var(--ink-3); padding:.7rem .9rem; border-bottom:1px solid var(--rule-strong); white-space:nowrap}
+  td{padding:.62rem .9rem; border-bottom:1px solid var(--rule); vertical-align:top}
+  td.num{font-family:var(--mono); font-size:.82rem; white-space:nowrap}
+  tr:last-child td{border-bottom:none}
+  tr.hi td{background:var(--accent-soft); font-weight:600}
+  .finding{background:var(--surface); border:1px solid var(--rule);
+    border-left:3px solid var(--accent); padding:1.4rem 1.5rem; margin:1.4rem 0}
+  .finding h3{color:var(--accent)}
+  .finding p:last-child{margin-bottom:0}
+  .fault{background:var(--surface); border:1px solid var(--rule); padding:1.2rem 1.3rem; margin:1rem 0}
+  .fault h3{margin-bottom:.35rem}
+  .fault p{font-size:.92rem; color:var(--ink-2); margin:0}
+  .svg-label{fill:var(--ink-3); font-family:var(--mono); font-size:11px}
+  .svg-name{fill:var(--ink-2); font-family:var(--sans); font-size:13px}
+  .svg-note{fill:var(--ink-3); font-family:var(--sans); font-size:11.5px}
+  .svg-val{font-family:var(--mono); font-size:12px; font-weight:600}
+  .v-bad{fill:var(--bad)} .v-acc{fill:var(--accent)} .v-ink{fill:var(--ink-2)}
+  .hatch-line{stroke:var(--rule-strong); stroke-width:2.5}
+  .frame-box{fill:none; stroke:var(--rule-strong)}
+  .win-box{fill:var(--accent-soft); stroke:var(--accent); stroke-width:2}
+  .bar-bad{fill:var(--bad); opacity:.82}
+  .bar-acc{fill:var(--accent)}
+  .panel-box{fill:none; stroke:var(--ink-2); stroke-width:1.5; stroke-dasharray:4 3}
+  .fig{background:var(--surface); border:1px solid var(--rule); padding:1.5rem 1.5rem 1.1rem; margin:1.6rem 0}
+  .fig svg{display:block; width:100%; height:auto}
+  .cap{font-family:var(--sans); font-size:.8rem; color:var(--ink-3); margin:1rem 0 0; line-height:1.45}
+  footer{border-top:1px solid var(--rule); padding-top:1.5rem; color:var(--ink-3);
+    font-family:var(--sans); font-size:.84rem}
+  @media (max-width:640px){h1{font-size:2.1rem} body{font-size:16px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <p class="label">Open toolkit</p>
+  <h1>Serene VR Encoding</h1>
+  <p class="thesis">
+    Preparing 360° video for Meta Quest headsets, encoded to a standard
+    <b>measured against the actual device</b> rather than vendor guidance — because the
+    published numbers turned out to be wrong, and the defects that matter are invisible
+    without a headset.
+  </p>
+  <a class="btn solid" href="https://github.com/thededman/serene-vr-encoding">View on GitHub</a>
+  <a class="btn" href="https://github.com/thededman/serene-vr-encoding/blob/master/HOW-TO-CONVERT-VIDEOS.md">Read the walkthrough</a>
+</header>
+
+<div class="stats">
+  <div class="stat"><div class="stat-n good">56→5.6<span style="font-size:.5em;letter-spacing:0"> GB</span></div>
+    <div class="stat-d">across four titles, at <em>better</em> measured quality</div></div>
+  <div class="stat"><div class="stat-n bad">10.7</div>
+    <div class="stat-d">pixels/degree a 4K 360° stream actually delivers</div></div>
+  <div class="stat"><div class="stat-n">19.1</div>
+    <div class="stat-d">pixels/degree a Quest 3S can resolve</div></div>
+  <div class="stat"><div class="stat-n">7.1<span style="font-size:.5em;letter-spacing:0"> dB</span></div>
+    <div class="stat-d">PSNR that exposed a mono file labelled as stereo</div></div>
+</div>
+
+<section>
+  <p class="label">The core idea</p>
+  <h2>Resolution is the wrong unit</h2>
+  <div class="prose">
+    <p>A flat 4K video puts 3840 pixels across the screen. A 360° video spreads those same
+    pixels around the viewer's <em>entire head</em> — and the headset shows only about 96°
+    at a time. The viewer sees roughly a quarter of the frame, stretched across the whole
+    display.</p>
+    <p>So the meaningful unit is <strong>pixels per degree</strong>. And by that measure a
+    4K 360° stream is supplying about half the detail the panel can show.</p>
+  </div>
+
+  <div class="fig">
+    <svg viewBox="0 0 700 300" role="img" aria-label="A 360 degree frame with the 96 degree visible window highlighted, comparing pixels delivered at 4K versus 5760 wide against a headset panel of 1832 pixels.">
+      <defs><pattern id="hatch" width="6" height="6" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
+        <line class="hatch-line" x1="0" y1="0" x2="0" y2="6"/></pattern></defs>
+      <text class="svg-label" x="0" y="14">FULL 360° EQUIRECTANGULAR FRAME</text>
+      <rect x="0" y="26" width="700" height="46" fill="url(#hatch)" opacity=".45"/>
+      <rect class="frame-box" x="0" y="26" width="700" height="46"/>
+      <rect class="win-box" x="228" y="20" width="187" height="58"/>
+      <text class="svg-val v-acc" x="321" y="54" text-anchor="middle">96° VISIBLE</text>
+      <text class="svg-label" x="0" y="132">PIXELS LANDING IN THAT WINDOW</text>
+      <text class="svg-name" x="0" y="163">4K ladder rung</text>
+      <rect class="bar-bad" x="150" y="150" width="290" height="20"/>
+      <text class="svg-val v-bad" x="450" y="165">1024 px</text>
+      <text class="svg-name" x="0" y="203">This standard</text>
+      <rect class="bar-acc" x="150" y="190" width="435" height="20"/>
+      <text class="svg-val v-acc" x="595" y="205">1536 px</text>
+      <text class="svg-name" x="0" y="243">Quest 3S panel</text>
+      <rect class="panel-box" x="150" y="230" width="519" height="20"/>
+      <text class="svg-val v-ink" x="679" y="245" text-anchor="end">1832 px</text>
+      <text class="svg-note" x="150" y="285">A 4K 360° rung fills 56% of the panel it is being shown on.</text>
+    </svg>
+    <p class="cap">The headset shows 1832 pixels per eye across ~96°. A 4K 360° frame can
+    only supply 1024 of them — the display is asked to show detail that was never encoded.</p>
+  </div>
+</section>
+
+<section>
+  <p class="label">Counterintuitive</p>
+  <h2>More pixels can make quality worse</h2>
+  <div class="finding">
+    <div class="prose">
+      <p>In a seven-way A/B comparison on the headset, an <strong>8K encode at 45 Mbps
+      scored lowest of all seven</strong>. Spread across 59 megapixels, every pixel is
+      starved. A 4608² encode at the same bitrate was indistinguishable from a 5760² one.</p>
+      <p>If something looks soft, the lever is bitrate or codec — not resolution. Raising
+      resolution inside a fixed bandwidth budget actively hurts.</p>
+    </div>
+  </div>
+
+  <div class="scroll">
+    <table>
+      <thead><tr><th>Encode</th><th>Codec</th><th>Mbps</th><th>PSNR dB</th><th>SSIM</th></tr></thead>
+      <tbody>
+        <tr class="hi"><td class="num">5760×5760</td><td>AV1</td><td class="num">34</td><td class="num">46.09</td><td class="num">0.9882</td></tr>
+        <tr><td class="num">5760×5760</td><td>AV1</td><td class="num">25</td><td class="num">45.57</td><td class="num">0.9876</td></tr>
+        <tr><td class="num">5760×5760</td><td>HEVC</td><td class="num">44</td><td class="num">44.92</td><td class="num">0.9850</td></tr>
+        <tr><td class="num">5760×5760</td><td>HEVC</td><td class="num">32</td><td class="num">43.12</td><td class="num">0.9810</td></tr>
+        <tr><td class="num">4608×4608</td><td>HEVC</td><td class="num">31</td><td class="num">43.05</td><td class="num">0.9814</td></tr>
+        <tr><td class="num">7680×7680</td><td>HEVC</td><td class="num">45</td><td class="num">42.82</td><td class="num">0.9811</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="prose">Measured through the headset's real viewport — the equirectangular frame
+  reprojected to a 96°×90° eye view at panel resolution. Measuring the raw frame is
+  misleading: the poles hold many pixels but almost no viewer attention.</p>
+</section>
+
+<section>
+  <p class="label">What it caught</p>
+  <h2>Two defects, same symptom</h2>
+  <p class="prose">Both titles looked "fuzzy". The causes were unrelated — which is the
+  argument for auditing a library by measurement rather than fixing titles one complaint
+  at a time.</p>
+
+  <div class="fault">
+    <h3>Over the decoder's bitrate limit</h3>
+    <p>An 8K master encoded at <strong>251 Mbps against the headset's 220 Mbps H.264
+    ceiling</strong>, with a nonstandard profile level. The decoder can't keep up, so
+    playback silently falls back to a degraded path.</p>
+  </div>
+
+  <div class="fault">
+    <h3>Mono video labelled as stereo</h3>
+    <p>A normal mono 360° frame tagged <em>top-bottom stereo</em>. A player honouring that
+    tag splits one image in half and sends the sky to one eye and the ground to the other,
+    stretching each 2× vertically — half the resolution, plus two eyes that cannot fuse.
+    PSNR between the halves was <strong>7.1 dB</strong>; genuine stereo measures ~25 dB.</p>
+  </div>
+</section>
+
+<section>
+  <p class="label">Using it</p>
+  <h2>Three commands</h2>
+  <pre>brew install ffmpeg          <span class="c"># must include libsvtav1</span>
+./check_setup.sh             <span class="c"># verifies this machine can run it</span>
+
+./inspect_master.sh /path/to/masters/   <span class="c"># read-only: what are these files?</span>
+./encode_vendor.sh  /path/to/masters/   <span class="c"># encode the batch</span>
+./verify_final.sh   final/output.mp4    <span class="c"># check before uploading</span></pre>
+  <p class="prose">The encoder auto-detects each file's projection, stereo layout and frame
+  rate, picks the right target, restores the 360° metadata FFmpeg strips from every output,
+  and refuses to guess when a file looks mislabelled.</p>
+
+  <div class="scroll">
+    <table>
+      <thead><tr><th>Source format</th><th>Output</th><th>Bitrate</th></tr></thead>
+      <tbody>
+        <tr class="hi"><td>360° stereo top-bottom, 30 fps</td><td class="num">5760×5760</td><td class="num">34 Mbps</td></tr>
+        <tr><td>360° stereo top-bottom, 60 fps</td><td class="num">5152×5152</td><td class="num">35 Mbps <em>(capped)</em></td></tr>
+        <tr><td>360° mono, 30 fps</td><td class="num">5760×2880</td><td class="num">17 Mbps</td></tr>
+        <tr><td>VR180 stereo side-by-side, 30 fps</td><td class="num">5760×2880</td><td class="num">17 Mbps</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="prose">Targets come from the decoder limits read off the device itself
+  (<code>/vendor/etc/media_codecs.xml</code>): 8192×8192 max frame, 7,776,000 blocks/s
+  throughput, 160 Mbps for AV1. Sources already below target are never upscaled.</p>
+</section>
+
+<section>
+  <p class="label">Honest scope</p>
+  <h2>Prior art</h2>
+  <div class="prose">
+    <p>The individual techniques here are established. Viewport-based quality measurement is
+    standardised in JVET's 360Lib (WS-PSNR, S-PSNR, viewport PSNR). Spatial metadata
+    injection has existing tools. Pixels-per-degree is ordinary display engineering. AV1 for
+    VR is widely documented.</p>
+    <p>What this adds is the integration: targets derived from measured device limits rather
+    than published specs, format auto-detection with a geometry sanity check, metadata
+    repair, and verification gates — in one pipeline that refuses to guess when a file looks
+    wrong.</p>
+  </div>
+</section>
+
+<footer>
+  <a href="https://github.com/thededman/serene-vr-encoding">github.com/thededman/serene-vr-encoding</a>
+  &nbsp;·&nbsp; Built and measured on a Meta Quest 3S.
+</footer>
+
+</div>
+</body>
+</html>

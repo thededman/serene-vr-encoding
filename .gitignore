@@ -1,0 +1,23 @@
+# Encoded output and test media — regenerate with the scripts, never commit.
+final/
+tests/
+viewports/
+*.mp4
+*.mov
+*.mkv
+
+# Rendered stills and comparison images
+*.jpg
+*.jpeg
+*.png
+
+# Run logs
+*_log.txt
+encode_log.txt
+verify_log.txt
+
+.DS_Store
+
+# Python bytecode
+__pycache__/
+*.pyc
