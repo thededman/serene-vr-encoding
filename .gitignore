@@ -21,3 +21,6 @@ verify_log.txt
 # Python bytecode
 __pycache__/
 *.pyc
+
+# Rust
+app/target/
