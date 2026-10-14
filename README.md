@@ -37,6 +37,27 @@ ladder designed for flat video under-serves VR.
 an 8K encode at 45 Mbps scored *lowest of all seven*. Spread across 59 megapixels, every
 pixel is starved. If something looks soft, the lever is bitrate or codec — not resolution.
 
+## Mac app
+
+A native GUI is in `app/` — drop videos on the window, see what each one is, click Convert,
+watch per-file progress. Same planner, same encoder settings, same metadata repair as the
+scripts; verified to produce byte-identical output.
+
+```bash
+cd app
+./packaging/bundle.sh          # builds "Serene VR Encoder.app"
+```
+
+Also usable from the command line:
+
+```bash
+./target/release/serene-vr-encoder plan    <file>        # what would it do?
+./target/release/serene-vr-encoder convert <file> [dir]  # encode one file
+```
+
+Distributing it to another Mac needs a Developer ID and notarization —
+see [`app/packaging/NOTARIZING.md`](app/packaging/NOTARIZING.md).
+
 ## Quick start
 
 ```bash
